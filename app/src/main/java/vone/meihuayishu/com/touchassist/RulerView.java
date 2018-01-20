@@ -18,6 +18,7 @@ import android.view.View;
 
 public class RulerView extends View {
     private static final String TAG = "MSL RulerView";
+    private OnRulerTouchListener onTouchListener;
 
     public RulerView(Context context) {
         this(context, null);
@@ -102,31 +103,27 @@ public class RulerView extends View {
     }
 
     private void startAnim() {
-        if (start) {
-
-        } else {
-            runnable = null;
-            thread = null;
-            percent = 0;
-        }
         if (runnable == null) runnable = new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i <= 100; i++) {
                     setPercent(i);
-                    if (i >= 100) i = 0;
-                    if (!start) break;
-
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+                setPercent(0);
+                start = false;
+                thread = null;
+                runnable = null;
             }
         };
-        if (thread == null) thread = new Thread(runnable);
-        thread.start();
+        if (thread == null) {
+            thread = new Thread(runnable);
+            thread.start();
+        }
 
     }
 
@@ -134,27 +131,26 @@ public class RulerView extends View {
 
     Thread thread;
 
+    public void start() {
+        setPercent(0);
+        startAnim();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
+        switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-
-                break;
-            default:
+                onTouchListener.onTouch();
                 break;
         }
         return true;
     }
 
-    public void start(){
-        if (start) {
-            start = false;
-            setPercent(0);
-        } else {
-            setPercent(0);
-            start = true;
-        }
-        startAnim();
+    public interface OnRulerTouchListener{
+        void onTouch();
     }
 
+    public void setOnRulerTouchListener(OnRulerTouchListener listener){
+        this.onTouchListener = listener;
+    }
 }

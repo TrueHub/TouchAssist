@@ -54,7 +54,7 @@ public class MainService extends Service {
         params.format = PixelFormat.RGBA_8888;
 
         //设置窗口初始停靠位置.
-        params.gravity = Gravity.RIGHT | Gravity.TOP;
+        params.gravity = Gravity.CENTER;
         params.x = 0;
         params.y = 0;
 
@@ -68,11 +68,6 @@ public class MainService extends Service {
         toucherLayout.setFocusableInTouchMode(true);
         //添加toucherlayout
         windowManager.addView(toucherLayout, params);
-
-        Log.i(TAG, "toucherlayout-->left:" + toucherLayout.getLeft());
-        Log.i(TAG, "toucherlayout-->right:" + toucherLayout.getRight());
-        Log.i(TAG, "toucherlayout-->top:" + toucherLayout.getTop());
-        Log.i(TAG, "toucherlayout-->bottom:" + toucherLayout.getBottom());
 
         //主动计算出当前View的宽高信息.
         toucherLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -105,6 +100,12 @@ public class MainService extends Service {
         };
         rulerView.setOnTouchListener(gestureListener);
         toucherLayout.setOnTouchListener(gestureListener);
+        rulerView.setOnRulerTouchListener(new RulerView.OnRulerTouchListener() {
+            @Override
+            public void onTouch() {
+                stopSelf();
+            }
+        });
 
     }
 
